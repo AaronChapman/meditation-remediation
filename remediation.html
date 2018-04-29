@@ -18,10 +18,10 @@
 			<div class="load_user_settings_container container_container">
 				<p class="settings_message">load user settings or save settings as user</p>
 
-				<input class="user_input" type="text" placeholder="username">
+				<input class="user_input" type="text" placeholder=" username">
 				<div class="settings_buttons_container">
-					<input class="load_settings settings_button" type="button" value="load settings">
-					<input class="save_settings settings_button" type="button" value="save settings">
+					<input class="load_settings settings_button button" type="button" value="load settings">
+					<input class="save_settings settings_button button" type="button" value="save settings" onclick="save_settings()">
 				</div>
 			</div>
 
@@ -30,9 +30,9 @@
 					<p class="current_user">settings for username</p>
 
 					<ul class="theme_options">
-						<li><input class="theme_option_light theme_option" type="button"></li>
-						<li><input class="theme_option_warm theme_option" type="button"></li>
-						<li><input class="theme_option_dark theme_option" type="button"></li>
+						<li><input class="theme_option_light theme_option button" type="button"></li>
+						<li><input class="theme_option_warm theme_option button" type="button"></li>
+						<li><input class="theme_option_dark theme_option button" type="button"></li>
 					</ul>
 				</div>
 			</div>
@@ -40,7 +40,8 @@
 		
 		<div class="timer_container container_container">
 			<p class="time_left">00:00:00</p>
-			<input class="start_timer" type="button" value="start session" onclick="update_time()">
+			
+			<input class="start_timer button" type="button" value="start session" onclick="update_time()">
 		</div>
     </body>
 
@@ -51,6 +52,19 @@
         var beginning_audio = "";
         var amount_of_time = 600;
         var time_left = true;
+		
+		String.prototype.hhmmss = function() {
+			var sec_num = parseInt(this, 10);
+			var hours = Math.floor(sec_num / 3600);
+			var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+			var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+			if (hours < 10) { hours   = "0" + hours; }
+			if (minutes < 10) { minutes = "0" + minutes; }
+			if (seconds < 10) { seconds = "0" + seconds; }
+			
+			return hours + ':' + minutes + ':' + seconds;
+		}
         
         function load_settings() {
             if ($('.user_input').val().trim()) {
@@ -61,7 +75,13 @@
         }
         
         function save_settings(user_save, theme_save, ending_audio_save, beginning_audio_save, time_save) {
-            
+			if ($('.user_input').val().trim()) {
+				//access firebase
+				$('.current_user').text('settings for ' + $('.user_input').val().trim());
+				$('.user_input').val('');
+			} else {
+				$('.settings_message').text('enter an existing user or save your current settings as a new user');
+			}
         }
         
         function change_theme(theme_option) {
@@ -73,7 +93,7 @@
         function update_time() {
             amount_of_time--;
             
-            $('.time_left').text(amount_of_time);
+            $('.time_left').text(amount_of_time.toString().hhmmss());
             
             if (amount_of_time === 0)
                 time_left = false;
