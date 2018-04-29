@@ -3,38 +3,45 @@
 <html>
     <head>
         <title>meditation remediation</title>
+
+		<link rel="stylesheet" href="https://oylo.info/css/site-wide/directory-header.css">
+		<link rel="stylesheet" href="remediation.css">
         
-        <link rel="stylesheet" href="remediation.css">
-        
-        <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
-        <script src="remediation.js"></script>
+        <script src="jquery.js"></script>
+		<script src="https://oylo.info/javascript/links_for_directory_header.js"></script>
     </head>
     
-    <body>
-        <div class="load_user_settings_container">
-            <input class="user_input" type="text" placeholder="username">
-            <input class="load_settings" type="button" placeholder="load settings">
-            <input class="save_settings" type="button" placeholder="save settings">
-            
-            <p class="settings_message"></p>
-        </div>
-        
-        <div class="main_content_container">
-            <div class="settings_container">
-                <p class="current_user">meditation settings for username</p>
-                
-                <ul class="theme_options">
-                    <li><input class="theme_option_light theme_option" type="button"></li>
-                    <li><input class="theme_option_warm theme_option" type="button"></li>
-                    <li><input class="theme_option_dark theme_option" type="button"></li>
-                </ul>
-            </div>
-            
-            <div class="timer_container">
-                <p class="time_left">00:00</p>
-                <input class="start_timer" type="button" value="start session" onclick="update_time()">
-            </div>
-        </div>
+	<body class="page_body" onload="load_directory_header('http://crossorigin.me/http://oylo.info/resources/templates/directory_header.html')">
+		<div id="directory_header"></div>
+		
+		<div class="contained_containers">
+			<div class="load_user_settings_container container_container">
+				<p class="settings_message">load user settings or save settings as user</p>
+
+				<input class="user_input" type="text" placeholder="username">
+				<div class="settings_buttons_container">
+					<input class="load_settings settings_button" type="button" value="load settings">
+					<input class="save_settings settings_button" type="button" value="save settings">
+				</div>
+			</div>
+
+			<div class="main_content_container container_container">
+				<div class="settings_container">
+					<p class="current_user">settings for username</p>
+
+					<ul class="theme_options">
+						<li><input class="theme_option_light theme_option" type="button"></li>
+						<li><input class="theme_option_warm theme_option" type="button"></li>
+						<li><input class="theme_option_dark theme_option" type="button"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="timer_container container_container">
+			<p class="time_left">00:00:00</p>
+			<input class="start_timer" type="button" value="start session" onclick="update_time()">
+		</div>
     </body>
 
     <script>
