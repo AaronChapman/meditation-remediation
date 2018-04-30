@@ -6,6 +6,26 @@
 	color: lightslategrey;
 	font-family: Verdana;
 	transition: all 1.5s ease-in-out;
+	outline: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.advance_link {
+	transition: all 0.1s ease-in-out;
+	cursor: pointer;
+	font-size: 8pt;
+	opacity: 0.75;
+	padding-top: 10px;
+	color: crimson;
+}
+
+.advance_link:hover {
+	opacity: 0.25;
 }
 
 .page_body {
@@ -65,8 +85,7 @@
 
 .settings_message {
 	font-size: 8pt;
-	text-align: center;
-	padding: 0 10px;
+	text-align: left;
 	margin: 0;
 }
 
@@ -75,7 +94,7 @@
 }
 
 .settings_container {
-	
+	display: grid;
 }
 
 .current_user {
@@ -106,7 +125,6 @@
 	border-radius: 2px;
 	width: 30px;
 	height: 30px;
-	outline: none;
 	cursor: pointer;
 }
 
@@ -127,7 +145,14 @@
 	width: 50%;
 	margin: 10px;
 	height: 20%;
-	padding: 40px;
+	padding: 40px 40px 10px 40px;
+}
+
+.time_select {
+	background: white;
+	border: 1px solid lightgray;
+	height: 35px;
+	border-radius: 2px;
 }
 
 .time_left {
@@ -144,7 +169,6 @@
 }
 
 .button {
-	outline: none;
 	transition: all 0.1s ease-in-out;
 	box-shadow: 0 2px 3px rgba(00, 00, 00, 0.25);
 }
