@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="remediation.css">
         
         <script src="jquery.js"></script>
+		<script src="sound.js"></script>
 		<script src="https://oylo.info/javascript/links_for_directory_header.js"></script>
     </head>
     
@@ -55,7 +56,7 @@
         var theme = "light";
         var ending_audio = "";
         var beginning_audio = "";
-        var amount_of_time = 0;
+        var amount_of_time = 10;
 		var timer;
 		var timer_state = "timer_stopped";
 		
@@ -148,14 +149,22 @@
             
             $('.time_left').text(amount_of_time.toString().hhmmss());
             
-            if (amount_of_time === 0) {
-                clearInterval(timer);
-				
-				$('.advance_link').css({'color':'lightslategrey'});
+			if (amount_of_time <= 300) {
+				$('.advance_link').css({'color':'crimson'});
 			}
 			
-			if (amount_of_time <= 300)
-				$('.advance_link').css({'color':'crimson'});
+			if (amount_of_time === 0) {
+				timer_state = "timer_stopped";
+
+				clearInterval(timer);
+				
+				$('.advance_link').css({'color':'lightslategrey'});
+				$('.select_hours, .select_minutes').empty();
+				
+				fill_time_selects();
+				
+				$.play_sound('resources/enders/ender-1.wav');
+			}
         }
 		
 		function fill_time_selects() {

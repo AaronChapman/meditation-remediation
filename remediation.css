@@ -112,7 +112,8 @@
 .theme_options {
 	display: inline-flex;
 	list-style-type: none;
-	padding: 0 25px;
+	padding: 0;
+	margin: 10px 0 0 0;
 }
 
 .theme_options li {
