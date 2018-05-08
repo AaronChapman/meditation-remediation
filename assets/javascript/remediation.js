@@ -8,9 +8,9 @@
 /•/ - theme           ::: [5]
 /*/
 
-var current_user = "none";
-var current_settings = [0, "light_theme", "despin", "gong"];
-var theme = "light";
+var current_user = "";
+var current_settings = [];
+var theme = "";
 var audio = {beginning: "", during: "", ending: "" }
 var timer;
 var timer_state = "timer_stopped";
@@ -57,14 +57,20 @@ function load_settings() {
 				return [database_objects[key]]; 
 			});
 			
+			var found_user = false;
+			
 			for (var i = 0; i < database_object_array.length; i++) {
 				if (database_object_array[i][0].username === current_user) {
+					found_user = true;
+					
 					current_settings = database_object_array[i][0].settings;
 
 					update_settings_interface(current_settings, current_user);
-				} else {
 				}
-			}
+				
+				if (i === database_object_array.length && !found_user)
+					$('.settings_message').text('user does not exist');
+			 }
 		});
 	} else {
 		$('.settings_message').text('enter a user to load settings for');
@@ -85,9 +91,8 @@ function save_settings() {
 		
 		var new_user_insert = firebase.database().ref().child('users').push(user_object);
 
-		$('.settings_message').text('settings for ' + $('.user_input').val().trim() + ' saved');
-		$('.current_user').text('settings for ' + $('.user_input').val().trim());
-		$('.user_input').val('');
+		$('.settings_message').text($('.user_input').val().trim() + '\'s settings were saved');
+		$('.current_user').text($('.user_input').val().trim() + "\'s settings");
 	} else {
 		$('.settings_message').text('enter a user to save settings for');
 	}
@@ -103,21 +108,19 @@ function update_settings_interface(with_these_settings, for_this_user) {
 	audio.ending = with_these_settings[4];
 	theme = with_these_settings[5];
 	
-	calculate_time();
-	
-	$('.settings_message').text('settings for ' + for_this_user + ' loaded');
-	$('.current_user').text('settings for ' + for_this_user);
-	$('.user_input').val('');
+	$('.settings_message').text(for_this_user + '\'s settings were loaded successfully');
+	$('.current_user').text(for_this_user + '\'s settings');
 	$('.select_hours').val(with_these_settings[0]);
 	$('.select_minutes').val(with_these_settings[1]);
-	
 	$(".select_beginning_audio").val(audio.beginning);
 	$(".select_during_audio").val(audio.during);
 	$(".select_ending_audio").val(audio.ending);
+	
+	calculate_time();
 }
 
 function reset_settings_message() {
-	setTimeout(function() { $('.settings_message').text('load / save settings'); }, 3500);
+	setTimeout(function() { $('.settings_message').text('load / save settings for:'); }, 3500);
 }
 
 function change_theme(theme_option) {
@@ -129,11 +132,11 @@ function change_theme(theme_option) {
 function calculate_time() {
 	hours = parseInt($('.select_hours').val(), 10);
 	minutes = parseInt($('.select_minutes').val(), 10);
-	amount_of_time = (parseInt($('.select_hours').val(), 10) * 3600) + (parseInt($('.select_minutes').val(), 10) * 60);
+	amount_of_time = (hours * 3600) + (minutes * 60);
 
 	$('.time_left').text(amount_of_time.toString().hhmmss());
 
-	if (amount_of_time > 300)
+	if (amount_of_time >= 300)
 		$('.advance_link').css({'color':'lightslategrey'});
 }
 
@@ -161,7 +164,7 @@ function set_time() {
 			clearInterval(timer);
 			timer = setInterval("update_time()", 1000);
 
-			$('.settings_message').text('load / save settings');
+			$('.settings_message').text('load / save settings for:');
 			$('.start_timer').val('stop session');
 		} else {
 			$('.settings_message').text('how long do you want to meditate?');
@@ -176,7 +179,7 @@ function update_time() {
 
 	$('.time_left').text(amount_of_time.toString().hhmmss());
 
-	if (amount_of_time <= 300) {
+	if (amount_of_time < 300) {
 		$('.advance_link').css({'color':'crimson'});
 	} else {
 		$('.advance_link').css({'color':'lightslategrey'});
@@ -192,7 +195,7 @@ function update_time() {
 
 		fill_time_selects();
 
-		$.play_sound('assets/enders/ender-1.wav');
+		$.play_sound(`assets/ending-audio/${audio.ending}.wav`);
 	}
 }
 
@@ -218,7 +221,7 @@ function fill_time_selects() {
 function fill_audio_selects() {
 	var beginning_audio = ["misty-gongs", "into-the-storm", "wind-chimes"];
 	var during_audio = ["jungle-birds", "waterfall", "inside-the-storm", "late-night-in-atlanta"];
-	var ending_audio = ["de-spin", "wind-chimes", "out-of-the-storm"];
+	var ending_audio = ["spin-down", "wind-chimes", "out-of-the-storm"];
 	
 	fill_audio_selects_loop('.select_beginning_audio', beginning_audio);
 	fill_audio_selects_loop('.select_during_audio', during_audio);
@@ -236,7 +239,7 @@ function fill_audio_selects_loop(selector, audio_files) {
 
 $(document).ready(function() {
 	$('.advance_link').click(function() {
-		if (amount_of_time > 300) {
+		if (amount_of_time >= 300) {
 			amount_of_time -= 300; 
 
 			$('.time_left').text(amount_of_time.toString().hhmmss());
