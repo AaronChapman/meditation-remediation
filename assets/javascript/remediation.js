@@ -17,9 +17,9 @@
 // 6 - build themes
 // 7 - allow advance to zero
 // 8 - dim screen checkbox
-// 9 - 
-// 10 - 
-// 11 - 
+// 9 - user interface arrangement
+// 10 - reset animations for notification/confirmation
+// 11 - general quality of life improvements
 // 12 - 
 // 13 - 
 // 14 - 
@@ -29,7 +29,7 @@
 var current_user = "";
 var current_settings = [];
 var theme = "";
-var audio = {beginning: "", during: "", ending: "" }
+var audio = {beginning: "spin-up", during: "a-night-in-the-city", ending: "spin-down" }
 var timer;
 var timer_state = "timer_stopped";
 var hours = 0, minutes = 0;
@@ -170,9 +170,6 @@ function calculate_time() {
 	amount_of_time = (hours * 3600) + (minutes * 60);
 
 	$('.time_left').text(amount_of_time.toString().hhmmss());
-
-	if (amount_of_time >= 300)
-		$('.advance_link').css({'color':'lightslategrey'});
 }
 
 //set audio options hahah ain't nobody gonna say my naming conventions are flawed
@@ -189,13 +186,8 @@ function set_time() {
 		timer_state = "timer_stopped";
 
 		clearInterval(timer);
-
-		amount_of_time = 0;
-
-		$('.time_left').text(amount_of_time.toString().hhmmss());
-		$('.advance_link').css({'color':'crimson'});
+		
 		$('.start_timer').val('start session');
-
 	//if timer is NOT running
 	} else if (timer_state === "timer_stopped") {
 		if (amount_of_time > 0) {
@@ -204,13 +196,15 @@ function set_time() {
 			timer = setInterval("update_time()", 1000);
 
 			$('.settings_message').text('load / save settings for:');
-			$('.start_timer').val('stop session');
+			$('.start_timer').val('pause session');
 		} else {
 			$('.settings_message').text('how long do you want to meditate?');
 
 			reset_settings_message();
 		}
 	}
+	
+	$('.time_left').text(amount_of_time.toString().hhmmss());
 }
 
 //update timer
@@ -219,13 +213,6 @@ function update_time() {
 
 	//format string
 	$('.time_left').text(amount_of_time.toString().hhmmss());
-
-	//check for 'advance_link' interface changes
-	if (amount_of_time < 300) {
-		$('.advance_link').css({'color':'crimson'});
-	} else {
-		$('.advance_link').css({'color':'lightslategrey'});
-	}
 
 	//if time is up, reset a bunch of stuff and play audio.ending
 	if (amount_of_time === 0) {
@@ -237,6 +224,9 @@ function update_time() {
 		$('.select_hours, .select_minutes').empty();
 
 		fill_time_selects();
+		calculate_time();
+
+		$('.time_left').text(amount_of_time.toString().hhmmss());
 
 		$.play_sound(`assets/ending-audio/${audio.ending}.wav`);
 	}
@@ -285,17 +275,31 @@ function fill_audio_selects_loop(selector, audio_files) {
 
 //when ya boy's ready to be listened to
 $(document).ready(function() {
-	//listen to clicks on the advance_link, which advances your time remaining by 5 minutes
-	$('.advance_link').click(function() {
-		if (amount_of_time >= 300) {
-			amount_of_time -= 300; 
+	//a key was pressed
+	document.body.onkeyup = function(e) {
+		//letter x
+		if (e.keyCode === 88) {
+			timer_state = "timer_stopped";
+
+			clearInterval(timer);
+			calculate_time();
 
 			$('.time_left').text(amount_of_time.toString().hhmmss());
-		} else {
-			$('.advance_link').css({'color':'crimson'});
-			$('.settings_message').text('whoops! can\'t do that right now');
+			$('.start_timer').val('start session');
+		//space bar
+		} else if (e.keyCode === 32) {
+			if (amount_of_time > 0) {
+				amount_of_time -= 300; 
+				
+				if (amount_of_time <= 0)
+					calculate_time();
 
-			reset_settings_message();
+				$('.time_left').text(amount_of_time.toString().hhmmss());
+			} else {
+				$('.settings_message').text('whoops! can\'t do that right now');
+
+				reset_settings_message();
+			}
 		}
-	}); 
+	}
 });

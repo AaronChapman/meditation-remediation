@@ -16,15 +16,19 @@
 }
 
 .advance_link {
+	color: crimson;
+}
+
+.advance_link, .keyboard_control_info {
 	transition: all 0.1s ease-in-out;
 	cursor: pointer;
 	font-size: 8pt;
 	opacity: 0.75;
 	padding-top: 10px;
-	color: crimson;
+	text-align: left;
 }
 
-.advance_link:hover {
+.advance_link:hover, .keyboard_control_info:hover {
 	opacity: 0.25;
 }
 
