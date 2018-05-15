@@ -8,6 +8,24 @@
 /•/ - theme           ::: [5]
 /*/
 
+//// TO DO ////
+// 1 - complete spacebar functionality
+// 2 - add pausing functionality
+// 3 - ability to change amount of time to advance by
+// 4 - make audio files
+// 5 - theme-switching functionality
+// 6 - build themes
+// 7 - allow advance to zero
+// 8 - dim screen checkbox
+// 9 - 
+// 10 - 
+// 11 - 
+// 12 - 
+// 13 - 
+// 14 - 
+// 15 -
+
+//globals
 var current_user = "";
 var current_settings = [];
 var theme = "";
@@ -45,12 +63,15 @@ String.prototype.hhmmss = function() {
 	return hours + ':' + minutes + ':' + seconds;
 }
 
+//load user settings
 function load_settings() {
+	//if user_input field has content
 	if ($('.user_input').val().trim()) {
 		current_user = $('.user_input').val().trim();
 		
 		let users_reference = firebase.database().ref('users');
 		
+		//check firebase for a user matching the input
 		users_reference.on("value", function(snapshot) {
 			var database_objects = snapshot.val();
 			var database_object_array = Object.keys(database_objects).map(function(key) {
@@ -59,19 +80,23 @@ function load_settings() {
 			
 			var found_user = false;
 			
+			//loop through all users in firebase
 			for (var i = 0; i < database_object_array.length; i++) {
 				if (database_object_array[i][0].username === current_user) {
 					found_user = true;
 					
+					//update current_settings and settings interface if a matching user was found
 					current_settings = database_object_array[i][0].settings;
 
 					update_settings_interface(current_settings, current_user);
 				}
 				
+				//if the requested user could not be found
 				if (i === database_object_array.length && !found_user)
 					$('.settings_message').text('user does not exist');
 			 }
 		});
+	//if the user did not type anything into the user_input field
 	} else {
 		$('.settings_message').text('enter a user to load settings for');
 	}
@@ -79,11 +104,15 @@ function load_settings() {
 	reset_settings_message();
 }
 
+//save user settings
 function save_settings() {
+	//if user_input field has content 
 	if ($('.user_input').val().trim()) {
+		//set the current_settings
 		current_user = $('.user_input').val().trim();
 		current_settings = [hours, minutes, audio.beginning, audio.during, audio.ending, theme];
 		
+		//create a new user object to be stored in firebase
 		var user_object = {
 			username: current_user,
 			settings: current_settings
@@ -91,8 +120,10 @@ function save_settings() {
 		
 		var new_user_insert = firebase.database().ref().child('users').push(user_object);
 
+		//update user interface
 		$('.settings_message').text($('.user_input').val().trim() + '\'s settings were saved');
 		$('.current_user').text($('.user_input').val().trim() + "\'s settings");
+	//if the user did not type anything into the user_input field	
 	} else {
 		$('.settings_message').text('enter a user to save settings for');
 	}
@@ -100,6 +131,7 @@ function save_settings() {
 	reset_settings_message();
 }
 
+//update user interface elements related to relevant settings
 function update_settings_interface(with_these_settings, for_this_user) {
 	hours = with_these_settings[0];
 	minutes = with_these_settings[1];
@@ -119,16 +151,19 @@ function update_settings_interface(with_these_settings, for_this_user) {
 	calculate_time();
 }
 
+//resets settings message after 3.5 seconds
 function reset_settings_message() {
 	setTimeout(function() { $('.settings_message').text('load / save settings for:'); }, 3500);
 }
 
+//change application theme
 function change_theme(theme_option) {
 	theme = theme_option;
 
 	//hotswap css file
 }
 
+//calculate time Lol
 function calculate_time() {
 	hours = parseInt($('.select_hours').val(), 10);
 	minutes = parseInt($('.select_minutes').val(), 10);
@@ -140,13 +175,16 @@ function calculate_time() {
 		$('.advance_link').css({'color':'lightslategrey'});
 }
 
+//set audio options hahah ain't nobody gonna say my naming conventions are flawed
 function set_audio_options() {
 	audio.beginning = $('.select_beginning_audio').val();
 	audio.during = $('.select_during_audio').val();
 	audio.ending = $('.select_ending_audio').val();
 }
 
+//called when user changes timer state
 function set_time() {
+	//if timer is running
 	if (timer_state === "timer_set") {
 		timer_state = "timer_stopped";
 
@@ -158,6 +196,7 @@ function set_time() {
 		$('.advance_link').css({'color':'crimson'});
 		$('.start_timer').val('start session');
 
+	//if timer is NOT running
 	} else if (timer_state === "timer_stopped") {
 		if (amount_of_time > 0) {
 			timer_state = "timer_set";
@@ -174,17 +213,21 @@ function set_time() {
 	}
 }
 
+//update timer
 function update_time() {
 	amount_of_time--;
 
+	//format string
 	$('.time_left').text(amount_of_time.toString().hhmmss());
 
+	//check for 'advance_link' interface changes
 	if (amount_of_time < 300) {
 		$('.advance_link').css({'color':'crimson'});
 	} else {
 		$('.advance_link').css({'color':'lightslategrey'});
 	}
 
+	//if time is up, reset a bunch of stuff and play audio.ending
 	if (amount_of_time === 0) {
 		timer_state = "timer_stopped";
 
@@ -199,6 +242,7 @@ function update_time() {
 	}
 }
 
+//populate time-based select elements with appropriate data
 function fill_time_selects() {
 	for (var i = 0; i < 6; i++) {
 		var select_option = i.toString();
@@ -218,6 +262,7 @@ function fill_time_selects() {
 	}
 }
 
+//populate audio-based select elements with the following array data
 function fill_audio_selects() {
 	var beginning_audio = ["misty-gongs", "into-the-storm", "wind-chimes"];
 	var during_audio = ["jungle-birds", "waterfall", "inside-the-storm", "late-night-in-atlanta"];
@@ -228,6 +273,7 @@ function fill_audio_selects() {
 	fill_audio_selects_loop('.select_ending_audio', ending_audio);
 }
 
+//a loop helper for the fill_audio_selects() function
 function fill_audio_selects_loop(selector, audio_files) {
 	for (var i = 0; i < audio_files.length; i++) {
 		var select_option = audio_files[i];
@@ -237,7 +283,9 @@ function fill_audio_selects_loop(selector, audio_files) {
 	}
 }
 
+//when ya boy's ready to be listened to
 $(document).ready(function() {
+	//listen to clicks on the advance_link, which advances your time remaining by 5 minutes
 	$('.advance_link').click(function() {
 		if (amount_of_time >= 300) {
 			amount_of_time -= 300; 
